@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hesap Oluştur"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <EditText android:id="@+id/etKayitAd" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Kullanıcı Adı"/>
+    <EditText android:id="@+id/etKayitEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="E-posta" android:inputType="textEmailAddress"/>
+    <EditText android:id="@+id/etKayitSifre" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Şifre" android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/btnKayitOl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="KAYDOL"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>

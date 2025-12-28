@@ -1,4 +1,4 @@
-package com.example.rezervasyonapp
+package com.example.rezervasyonapp1
 
 import org.junit.Test
 

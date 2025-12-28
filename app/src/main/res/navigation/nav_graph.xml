@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <!-- 1. Login Fragment -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.LoginFragment"
+        android:label="Giriş Yap"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_loginFragment_to_anasayfaFragment"
+            app:destination="@id/anasayfaFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_loginFragment_to_kayitOlFragment"
+            app:destination="@id/kayitOlFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_adminPanelFragment"
+            app:destination="@id/adminPanelFragment" />
+    </fragment>
+
+    <!-- 2. Anasayfa Fragment (Buradayız) -->
+    <fragment
+        android:id="@+id/anasayfaFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.AnasayfaFragment"
+        android:label="Anasayfa"
+        tools:layout="@layout/fragment_anasayfa">
+
+        <!-- Action ID'si kodundaki ile aynı olmalı -->
+        <action
+            android:id="@+id/action_anasayfaFragment_to_seferlerFragment"
+            app:destination="@id/seferlerFragment" />
+    </fragment>
+
+    <!-- 3. Seferler Fragment (ARGÜMANLAR BURADA TANIMLANIYOR) -->
+    <fragment
+        android:id="@+id/seferlerFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.SeferlerFragment"
+        android:label="Seferler"
+        tools:layout="@layout/fragment_seferler">
+
+        <!-- KODUN BU İKİ PARAMETREYİ GÖNDERİYOR, NAV GRAPH BUNLARI BEKLEMELİ: -->
+        <argument
+            android:name="kalkis"
+            app:argType="string" />
+        <argument
+            android:name="varis"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_seferlerFragment_to_koltukSecimFragment"
+            app:destination="@id/koltukSecimFragment" />
+    </fragment>
+
+    <!-- 4. Koltuk Seçim Fragment -->
+    <fragment
+        android:id="@+id/koltukSecimFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.KoltukSecimFragment"
+        android:label="Koltuk Seçimi"
+        tools:layout="@layout/fragment_koltuk_secim">
+
+        <argument
+            android:name="secilenSefer"
+            app:argType="com.example.rezervasyonapp1.data.entity.Seferler" />
+    </fragment>
+
+    <!-- 5. Admin Fragment -->
+    <fragment
+        android:id="@+id/adminFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.AdminFragment"
+        android:label="Admin Paneli"
+        tools:layout="@layout/fragment_admin" />
+    <fragment
+        android:id="@+id/kayitOlFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.KayitOlFragment"
+        android:label="KayitOlFragment" />
+    <fragment
+        android:id="@+id/adminAracEkleFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.AdminAracEkleFragment"
+        android:label="AdminAracEkleFragment" />
+    <fragment
+        android:id="@+id/adminPanelFragment"
+        android:name="com.example.rezervasyonapp1.ui.fragment.AdminPanelFragment"
+        android:label="AdminPanelFragment" >
+        <action
+            android:id="@+id/action_adminPanelFragment_to_adminAracEkleFragment"
+            app:destination="@id/adminAracEkleFragment" />
+        <action
+            android:id="@+id/action_adminPanelFragment_to_adminFragment"
+            app:destination="@id/adminFragment" />
+    </fragment>
+
+</navigation>

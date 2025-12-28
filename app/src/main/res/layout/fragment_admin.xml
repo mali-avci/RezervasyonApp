@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F8F9FA">
+
+    <TextView
+        android:id="@+id/tvAdminBaslik"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sefer Yönetim Paneli"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="12dp"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kalkış Şehri:"/>
+            <Spinner android:id="@+id/spinnerKalkis" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="8dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Varış Şehri:"/>
+            <Spinner android:id="@+id/spinnerVaris" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="8dp" />
+
+            <EditText android:id="@+id/etTarih" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tarih Seçiniz" android:focusable="false" android:clickable="true"/>
+            <EditText android:id="@+id/etSaat" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Saat (00:59)" android:inputType="time"/>
+            <EditText android:id="@+id/etFiyat" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Fiyat (800)" android:inputType="numberDecimal"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sefer Tipi:" android:layout_marginTop="8dp"/>
+            <RadioGroup android:id="@+id/rgTip" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <RadioButton android:id="@+id/rbOtobus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Otobüs" android:checked="true"/>
+                <RadioButton android:id="@+id/rbUcak" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Uçak" android:layout_marginStart="16dp"/>
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sefer Aracını Seç:"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginTop="12dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerAracSec"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnEkle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SEFERİ KAYDET"
+                android:layout_marginTop="8dp"
+                app:cornerRadius="8dp"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginVertical="12dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mevcut Seferler"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAdminSeferler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

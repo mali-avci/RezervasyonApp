@@ -1,90 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F8F9FA">
+    android:background="@color/background"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvAdminBaslik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sefer Yönetim Paneli"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="12dp"/>
+        android:textColor="@color/text_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scrollViewForm"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAdminBaslik"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kalkış Şehri:"/>
-            <Spinner android:id="@+id/spinnerKalkis" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="8dp" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutKalkis"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Kalkış Şehri"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:endIconMode="dropdown_menu">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Varış Şehri:"/>
-            <Spinner android:id="@+id/spinnerVaris" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="8dp" />
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteKalkis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:padding="16dp"
+                    android:textColor="@color/text_primary" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText android:id="@+id/etTarih" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tarih Seçiniz" android:focusable="false" android:clickable="true"/>
-            <EditText android:id="@+id/etSaat" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Saat (00:59)" android:inputType="time"/>
-            <EditText android:id="@+id/etFiyat" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Fiyat (800)" android:inputType="numberDecimal"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutVaris"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Varış Şehri"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:endIconMode="dropdown_menu">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sefer Tipi:" android:layout_marginTop="8dp"/>
-            <RadioGroup android:id="@+id/rgTip" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                <RadioButton android:id="@+id/rbOtobus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Otobüs" android:checked="true"/>
-                <RadioButton android:id="@+id/rbUcak" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Uçak" android:layout_marginStart="16dp"/>
-            </RadioGroup>
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteVaris"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:padding="16dp"
+                    android:textColor="@color/text_primary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutTarih"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Tarih Seçiniz">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTarih"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutSaat"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Saat (Örn: 14:30)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSaat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutFiyat"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Fiyat (TL)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFiyat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sefer Aracını Seç:"
+                android:text="Sefer Tipi"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginBottom="8dp"/>
 
-            <Spinner
-                android:id="@+id/spinnerAracSec"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@android:drawable/btn_dropdown"
-                android:layout_marginBottom="16dp"/>
-
-            <Button
-                android:id="@+id/btnEkle"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <RadioGroup
+                    android:id="@+id/rgTip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <RadioButton
+                        android:id="@+id/rbOtobus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Otobüs"
+                        android:checked="true"
+                        android:textColor="@color/text_primary" />
+
+                    <RadioButton
+                        android:id="@+id/rbUcak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Uçak"
+                        android:layout_marginStart="32dp"
+                        android:textColor="@color/text_primary" />
+                </RadioGroup>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutArac"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Sefer Aracını Seç"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:endIconMode="dropdown_menu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteAracSec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:padding="16dp"
+                    android:textColor="@color/text_primary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEkle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:text="SEFERİ KAYDET"
-                android:layout_marginTop="8dp"
-                app:cornerRadius="8dp"/>
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGeri"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:text="GERİ DÖN"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_revert"
+                app:iconGravity="textStart"
+                app:strokeColor="@color/primary" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginVertical="12dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mevcut Seferler"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAdminSeferler"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

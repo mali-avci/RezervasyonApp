@@ -1,3 +1,6 @@
+package com.example.rezervasyonapp1.ui.viewmodel
+
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.rezervasyonapp1.data.entity.Seferler
@@ -9,6 +12,9 @@ class SeferlerViewModel : ViewModel() {
     val seferlerListesi: MutableLiveData<List<Seferler>> = srepo.seferlerListesi
     val anlikSefer = MutableLiveData<Seferler>()
 
+    init {
+        Log.d("SeferlerViewModel", "ViewModel oluşturuldu, LiveData referansı: ${seferlerListesi.hashCode()}")
+    }
 
     fun seciliSeferiTakipEt(seferId: String) {
         // Repository'deki yeni canlı dinleme fonksiyonunu çağırıyoruz
@@ -17,11 +23,12 @@ class SeferlerViewModel : ViewModel() {
         }
     }
     fun seferleriYukle() {
+        Log.d("SeferlerViewModel", "seferleriYukle çağrıldı")
         srepo.tumSeferleriAl()
     }
 
-    fun ara(kalkis: String, varis: String) {
-        srepo.seferAra(kalkis, varis)
+    fun ara(kalkis: String, varis: String, tarih: String) {
+        srepo.seferAra(kalkis, varis, tarih)
     }
 
     fun kaydet(sefer: Seferler) {

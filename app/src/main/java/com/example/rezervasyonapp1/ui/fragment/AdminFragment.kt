@@ -5,24 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
+
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import com.example.rezervasyonapp1.data.entity.Otobus
 import com.example.rezervasyonapp1.data.entity.Seferler
 import com.example.rezervasyonapp1.data.entity.Ucak
 import com.example.rezervasyonapp1.databinding.FragmentAdminBinding
-import com.example.rezervasyonapp1.ui.adapter.SeferlerAdapter
 import com.example.rezervasyonapp1.ui.viewmodel.AracViewModel
-import SeferlerViewModel
-import android.app.AlertDialog
-import android.graphics.Canvas
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
+import com.example.rezervasyonapp1.ui.viewmodel.SeferlerViewModel
+import com.example.rezervasyonapp1.util.SehirlerConstants
 import java.util.*
 
 class AdminFragment : Fragment() {
@@ -33,10 +28,9 @@ class AdminFragment : Fragment() {
     private val seferViewModel: SeferlerViewModel by viewModels()
     private val aracViewModel: AracViewModel by viewModels()
 
-    private val sehirler = listOf("İzmir", "İstanbul", "Ankara", "Antalya", "Bursa", "Adana", "Trabzon", "Erzurum")
     private var secilenSeferId: String? = null
 
-    // Spinner'dan seçilen araç nesnesini burada tutacağız
+    // Dropdown'dan seçilen araç nesnesini burada tutacağız
     private var secilenAracNesnesi: Any? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -47,11 +41,16 @@ class AdminFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSehirSpinners()
-        setupAracSpinnerObserver() // Araç listesini dinle
-        setupRecyclerView()
+        setupSehirDropdowns()
+        setupAracDropdownObserver() // Araç listesini dinle
 
-        seferViewModel.seferleriYukle()
+        // Bundle'dan seferId'yi al (düzenleme modu için)
+        val gelenSeferId = arguments?.getString("seferId") ?: ""
+        
+        if (gelenSeferId.isNotEmpty()) {
+            // Düzenleme modunda: Sefer bilgilerini yükle
+            seferDuzenlemeModu(gelenSeferId)
+        }
 
         // 1. Araç Tipi Değiştiğinde Listeyi Yenile
         binding.rgTip.setOnCheckedChangeListener { _, checkedId ->
@@ -68,45 +67,138 @@ class AdminFragment : Fragment() {
 
         // 3. Kaydet Butonu
         binding.btnEkle.setOnClickListener { veriyiIsle() }
+
+        // 4. Geri Butonu
+        binding.btnGeri.setOnClickListener { 
+            findNavController().popBackStack()
+        }
+    }
+    
+    private fun seferDuzenlemeModu(seferId: String) {
+        // Önce sefer bilgilerini Firestore'dan çek
+        seferViewModel.srepo.tekSeferGetir(seferId) { sefer ->
+            sefer?.let { secilenSefer ->
+                secilenSeferId = secilenSefer.sefer_id
+                binding.etTarih.setText(secilenSefer.tarih)
+                binding.etSaat.setText(secilenSefer.saat)
+                binding.etFiyat.setText(secilenSefer.fiyat.toString())
+                binding.btnEkle.text = "GÜNCELLE"
+
+                // Araç tipini ayarla
+                if (secilenSefer.arac_tipi == "OTOBUS") {
+                    binding.rbOtobus.isChecked = true
+                    aracViewModel.araclariYukle("OTOBUS")
+                } else {
+                    binding.rbUcak.isChecked = true
+                    aracViewModel.araclariYukle("UCAK")
+                }
+                
+                // AutoCompleteTextView seçimlerini ayarla
+                if (SehirlerConstants.SEHIRLER.contains(secilenSefer.kalkis_yeri)) {
+                    binding.autoCompleteKalkis.setText(secilenSefer.kalkis_yeri, false)
+                }
+                if (SehirlerConstants.SEHIRLER.contains(secilenSefer.varis_yeri)) {
+                    binding.autoCompleteVaris.setText(secilenSefer.varis_yeri, false)
+                }
+                
+                // Seçilen aracı bul ve ayarla
+                aracViewModel.aracListesi.observe(viewLifecycleOwner) { aracListesi ->
+                    val gosterilecekListe = aracListesi.map { arac ->
+                        if (arac is Otobus) "${arac.arac_plaka} - ${arac.firma_adi} (${arac.kapasite})"
+                        else (arac as Ucak).let { "${it.arac_plaka} - ${it.havayolu_sirketi} (${it.kapasite})" }
+                    }
+                    val secilenArac = aracListesi.find { arac ->
+                        if (arac is Otobus && secilenSefer.otobus_detay != null) {
+                            arac.arac_plaka == secilenSefer.otobus_detay?.arac_plaka
+                        } else if (arac is Ucak && secilenSefer.ucak_detay != null) {
+                            arac.arac_plaka == secilenSefer.ucak_detay?.arac_plaka
+                        } else {
+                            false
+                        }
+                    }
+                    secilenArac?.let {
+                        secilenAracNesnesi = it
+                        val aracIndex = aracListesi.indexOf(it)
+                        if (aracIndex >= 0 && aracIndex < gosterilecekListe.size) {
+                            binding.autoCompleteAracSec.setText(gosterilecekListe[aracIndex], false)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private fun setupAracSpinnerObserver() {
-        // ViewModel'den gelen araç listesini dinle ve Spinner'a doldur
+    private fun setupAracDropdownObserver() {
+        // ViewModel'den gelen araç listesini dinle ve AutoComplete'e doldur
         aracViewModel.aracListesi.observe(viewLifecycleOwner) { aracListesi ->
             val gosterilecekListe = aracListesi.map { arac ->
                 if (arac is Otobus) "${arac.arac_plaka} - ${arac.firma_adi} (${arac.kapasite})"
                 else (arac as Ucak).let { "${it.arac_plaka} - ${it.havayolu_sirketi} (${it.kapasite})" }
             }
 
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, gosterilecekListe)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerAracSec.adapter = adapter // XML'de spinnerAracSec ID'li spinner olmalı
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                gosterilecekListe
+            )
+            binding.autoCompleteAracSec.setAdapter(adapter)
 
-            binding.spinnerAracSec.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-                    secilenAracNesnesi = aracListesi[position]
-                }
-                override fun onNothingSelected(p0: AdapterView<*>?) {}
+            // Seçim yapıldığında araç nesnesini kaydet
+            binding.autoCompleteAracSec.setOnItemClickListener { _, _, position, _ ->
+                secilenAracNesnesi = aracListesi[position]
             }
         }
     }
 
     private fun veriyiIsle() {
-        val kalkis = binding.spinnerKalkis.selectedItem.toString()
-        val varis = binding.spinnerVaris.selectedItem.toString()
-        val fiyatText = binding.etFiyat.text.toString()
-        val tarih = binding.etTarih.text.toString()
+        val kalkis = binding.autoCompleteKalkis.text.toString().trim()
+        val varis = binding.autoCompleteVaris.text.toString().trim()
+        val fiyatText = binding.etFiyat.text.toString().trim()
+        val tarih = binding.etTarih.text.toString().trim()
+        val saat = binding.etSaat.text.toString().trim()
 
-        if (fiyatText.isNotEmpty() && tarih.isNotEmpty() && secilenAracNesnesi != null) {
+        // Validasyon kontrolleri
+        if (kalkis.isEmpty() || varis.isEmpty()) {
+            Toast.makeText(requireContext(), "Lütfen kalkış ve varış şehirlerini seçiniz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (kalkis == varis) {
+            Toast.makeText(requireContext(), "Kalkış ve varış noktaları aynı olamaz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (tarih.isEmpty()) {
+            Toast.makeText(requireContext(), "Lütfen tarih seçiniz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (saat.isEmpty()) {
+            Toast.makeText(requireContext(), "Lütfen saat giriniz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (fiyatText.isEmpty()) {
+            Toast.makeText(requireContext(), "Lütfen fiyat giriniz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (secilenAracNesnesi == null) {
+            Toast.makeText(requireContext(), "Lütfen araç seçiniz!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
             val tip = if (binding.rbOtobus.isChecked) "OTOBUS" else "UCAK"
+            val fiyat = fiyatText.toDouble()
 
             val sefer = Seferler(
                 sefer_id = secilenSeferId ?: "",
                 kalkis_yeri = kalkis,
                 varis_yeri = varis,
                 tarih = tarih,
-                saat = binding.etSaat.text.toString(),
-                fiyat = fiyatText.toDouble(),
+                saat = saat,
+                fiyat = fiyat,
                 arac_tipi = tip,
                 dolu_koltuklar = ""
             )
@@ -122,80 +214,79 @@ class AdminFragment : Fragment() {
 
             if (secilenSeferId == null) {
                 seferViewModel.srepo.seferKaydet(sefer)
+                Toast.makeText(requireContext(), "Sefer Başarıyla Kaydedildi", Toast.LENGTH_SHORT).show()
             } else {
                 seferViewModel.srepo.seferGuncelle(sefer)
+                Toast.makeText(requireContext(), "Sefer Başarıyla Güncellendi", Toast.LENGTH_SHORT).show()
             }
-
-            Toast.makeText(requireContext(), "Sefer Başarıyla Kaydedildi", Toast.LENGTH_SHORT).show()
+            
             alanlariTemizle()
-        } else {
-            Toast.makeText(requireContext(), "Lütfen tarih, fiyat ve araç seçimi yapınız!", Toast.LENGTH_SHORT).show()
+        } catch (e: NumberFormatException) {
+            Toast.makeText(requireContext(), "Fiyat geçerli bir sayı olmalıdır!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setupRecyclerView() {
-        val adapter = SeferlerAdapter { secilenSefer ->
-            // DÜZENLEME MODU (Tıklanınca çalışır)
-            secilenSeferId = secilenSefer.sefer_id
-            binding.etTarih.setText(secilenSefer.tarih)
-            binding.etSaat.setText(secilenSefer.saat)
-            binding.etFiyat.setText(secilenSefer.fiyat.toString())
-            binding.btnEkle.text = "GÜNCELLE"
+    private fun setupSehirDropdowns() {
+        // Kalkış dropdown için adapter
+        val adapterKalkis = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            SehirlerConstants.SEHIRLER
+        )
+        binding.autoCompleteKalkis.setAdapter(adapterKalkis)
+        
+        // Varış dropdown için adapter
+        val adapterVaris = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            SehirlerConstants.SEHIRLER
+        )
+        binding.autoCompleteVaris.setAdapter(adapterVaris)
 
-            if (secilenSefer.arac_tipi == "OTOBUS") binding.rbOtobus.isChecked = true else binding.rbUcak.isChecked = true
-            binding.spinnerKalkis.setSelection(sehirler.indexOf(secilenSefer.kalkis_yeri))
-            binding.spinnerVaris.setSelection(sehirler.indexOf(secilenSefer.varis_yeri))
+        // Şehir seçildiğinde diğer dropdown'u güncelle (aynı şehir seçilemez)
+        binding.autoCompleteKalkis.setOnItemClickListener { _, _, _, _ ->
+            updateVarisDropdown()
         }
-
-        binding.rvAdminSeferler.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvAdminSeferler.adapter = adapter
-
-        // --- KAYDIRARAK SİLME İŞLEMİ (SWIPE TO DELETE) ---
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return false // Taşıma işlemi yapmıyoruz
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val silinecekSefer = adapter.currentList[position]
-
-                // Kullanıcıdan son bir onay alalım (Yanlışlıkla silmeyi önlemek için)
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Seferi Sil")
-                    .setMessage("${silinecekSefer.kalkis_yeri} -> ${silinecekSefer.varis_yeri} seferini silmek istediğinize emin misiniz?")
-                    .setPositiveButton("Evet") { _, _ ->
-                        // ViewModel üzerinden silme işlemini başlat
-                        seferViewModel.sil(silinecekSefer.sefer_id)
-                        Snackbar.make(binding.root, "Sefer silindi", Snackbar.LENGTH_SHORT).show()
-                    }
-                    .setNegativeButton("Hayır") { _, _ ->
-                        // Silme iptal edilirse listeyi eski haline getir (animasyonla geri gelir)
-                        adapter.notifyItemChanged(position)
-                    }
-                    .show()
-            }
-
-            // (Opsiyonel) Kaydırırken arkada kırmızı renk ve çöp kutusu ikonu göstermek istersen:
-            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-                // Eğer basit bir kütüphane kullanmak istersen 'RecyclerViewSwipeDecorator' öneririm.
-                // Yoksa burayı boş bırakabilirsin, varsayılan efekt çalışır.
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            }
+        
+        binding.autoCompleteVaris.setOnItemClickListener { _, _, _, _ ->
+            updateKalkisDropdown()
         }
-
-        // Helper'ı RecyclerView'a bağla
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvAdminSeferler)
-
-        // Verileri gözlemle
-        seferViewModel.seferlerListesi.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
 
-    private fun setupSehirSpinners() {
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sehirler)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerKalkis.adapter = adapter
-        binding.spinnerVaris.adapter = adapter
+    private fun updateVarisDropdown() {
+        val secilenKalkis = binding.autoCompleteKalkis.text.toString()
+        if (secilenKalkis.isEmpty()) return
+        
+        val filtrelenmisListe = SehirlerConstants.SEHIRLER.filter { it != secilenKalkis }
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            filtrelenmisListe
+        )
+        binding.autoCompleteVaris.setAdapter(adapter)
+        
+        // Eğer seçili varış, kalkış ile aynıysa temizle
+        if (binding.autoCompleteVaris.text.toString() == secilenKalkis) {
+            binding.autoCompleteVaris.setText("", false)
+        }
+    }
+
+    private fun updateKalkisDropdown() {
+        val secilenVaris = binding.autoCompleteVaris.text.toString()
+        if (secilenVaris.isEmpty()) return
+        
+        val filtrelenmisListe = SehirlerConstants.SEHIRLER.filter { it != secilenVaris }
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            filtrelenmisListe
+        )
+        binding.autoCompleteKalkis.setAdapter(adapter)
+        
+        // Eğer seçili kalkış, varış ile aynıysa temizle
+        if (binding.autoCompleteKalkis.text.toString() == secilenVaris) {
+            binding.autoCompleteKalkis.setText("", false)
+        }
     }
 
     private fun tarihSeciciyiGoster() {
@@ -210,7 +301,11 @@ class AdminFragment : Fragment() {
     }
 
     private fun alanlariTemizle() {
-        binding.etTarih.setText(""); binding.etSaat.setText(""); binding.etFiyat.setText("")
+        binding.etTarih.setText("")
+        binding.etSaat.setText("")
+        binding.etFiyat.setText("")
+        binding.autoCompleteKalkis.setText("", false)
+        binding.autoCompleteVaris.setText("", false)
         binding.btnEkle.text = "SEFERİ KAYDET"
         secilenSeferId = null
         secilenAracNesnesi = null

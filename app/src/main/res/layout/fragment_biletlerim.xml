@@ -6,76 +6,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:padding="16dp"
-    tools:context=".ui.fragment.SeferlerFragment">
+    tools:context=".ui.fragment.BiletlerimFragment">
 
-    <!-- Başlık -->
     <TextView
         android:id="@+id/textViewBaslik"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Uygun Seferler"
+        android:layout_marginTop="24dp"
+        android:text="Biletlerim"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Sefer Listesi -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSeferler"
+        android:id="@+id/rvBiletlerim"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/buttonGeri"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewBaslik"
-        tools:listitem="@layout/sefer_card_tasarim" />
+        tools:listitem="@layout/bilet_card_tasarim" />
 
-    <!-- Boş Liste Mesajı -->
     <TextView
         android:id="@+id/textViewBosMesaj"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sefer bulunamadı."
+        android:text="Henüz biletiniz bulunmamaktadır."
         android:textSize="16sp"
         android:textColor="@color/text_secondary"
-        android:gravity="center"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonGeri"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBaslik" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Yükleniyor Göstergesi -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonGeri"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBaslik" />
-
-    <!-- Geri Butonu -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonGeri"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="GERİ DÖN"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

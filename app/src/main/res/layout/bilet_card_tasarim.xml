@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
     app:cardBackgroundColor="@color/surface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivAracIkonu"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="İstanbul -> Ankara"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             app:layout_constraintStart_toEndOf="@id/ivAracIkonu"
@@ -41,9 +41,19 @@
             android:layout_marginTop="2dp"
             android:text="27/12/2024 - 14:00"
             android:textColor="@color/text_secondary"
-            android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@id/textViewGuzergah"
             app:layout_constraintTop_toBottomOf="@id/textViewGuzergah" />
+
+        <TextView
+            android:id="@+id/textViewKoltukNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Koltuk: 12"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/textViewGuzergah"
+            app:layout_constraintTop_toBottomOf="@id/textViewDetay" />
 
         <TextView
             android:id="@+id/tvAracTipiLabel"
@@ -57,7 +67,7 @@
             android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/textViewGuzergah"
-            app:layout_constraintTop_toBottomOf="@id/textViewDetay" />
+            app:layout_constraintTop_toBottomOf="@id/textViewKoltukNo" />
 
         <TextView
             android:id="@+id/textViewFiyat"
@@ -65,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="500 TL"
             android:textColor="@color/success"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -73,3 +83,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
+

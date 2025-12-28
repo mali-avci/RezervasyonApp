@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:padding="20dp"
     tools:context=".ui.fragment.AnasayfaFragment">
 
@@ -13,8 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Nereye Gitmek İstersiniz?"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:textStyle="bold"
+        android:textColor="@color/text_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,16 +27,34 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="Kalkış Noktası"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewAnasayfaBaslik" />
 
-    <Spinner
-        android:id="@+id/spinnerNereden"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutNereden"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@android:drawable/btn_dropdown"
-        app:layout_constraintTop_toBottomOf="@+id/labelNereden" />
+        android:hint="Kalkış Noktası"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:endIconMode="dropdown_menu"
+        app:layout_constraintTop_toBottomOf="@+id/labelNereden">
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteNereden"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:padding="16dp"
+            android:textColor="@color/text_primary" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/labelNereye"
@@ -42,16 +62,34 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Varış Noktası"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerNereden" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutNereden" />
 
-    <Spinner
-        android:id="@+id/spinnerNereye"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutNereye"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@android:drawable/btn_dropdown"
-        app:layout_constraintTop_toBottomOf="@+id/labelNereye" />
+        android:hint="Varış Noktası"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:endIconMode="dropdown_menu"
+        app:layout_constraintTop_toBottomOf="@+id/labelNereye">
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteNereye"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:padding="16dp"
+            android:textColor="@color/text_primary" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTarih"
@@ -60,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:hint="Yolculuk Tarihi"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerNereye">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutNereye">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTarih"
@@ -70,13 +108,33 @@
             android:clickable="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonSeferAra"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="40dp"
         android:text="SEFERLERİ GÖR"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_search"
+        app:iconGravity="textStart"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTarih" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBiletlerim"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:text="BİLETLERİM"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_view"
+        app:iconGravity="textStart"
+        app:strokeColor="@color/primary"
+        app:layout_constraintTop_toBottomOf="@+id/buttonSeferAra" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/CikisYap"

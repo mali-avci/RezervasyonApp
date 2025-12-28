@@ -30,7 +30,7 @@ class BiletRepository {
         db.collection("biletler").add(yeniBilet)
     }
 
-    // Bilet İptali
+    // Bilet İptali (sefer_id ve koltuk_no ile)
     fun biletSil(seferId: String, koltukNo: Int) {
         val uid = auth.currentUser?.uid ?: return
         db.collection("biletler")
@@ -40,6 +40,58 @@ class BiletRepository {
             .get()
             .addOnSuccessListener { snapshot ->
                 for (doc in snapshot) { doc.reference.delete() }
+            }
+    }
+
+    // Bilet Silme (bilet_id ile - silinmiş seferler için)
+    fun biletSilById(biletId: String) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("biletler")
+            .whereEqualTo("bilet_id", biletId)
+            .whereEqualTo("kullanici_id", uid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                for (doc in snapshot) { doc.reference.delete() }
+            }
+    }
+
+    // Biletleri sefer bilgileriyle birlikte getir
+    fun biletlerimiSeferBilgileriyleGetir(callback: (List<Pair<Biletler, com.example.rezervasyonapp1.data.entity.Seferler?>>) -> Unit) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("biletler")
+            .whereEqualTo("kullanici_id", uid)
+            .addSnapshotListener { biletSnapshot, _ ->
+                val biletler = biletSnapshot?.toObjects(Biletler::class.java) ?: listOf()
+                
+                if (biletler.isEmpty()) {
+                    callback(emptyList())
+                    return@addSnapshotListener
+                }
+
+                // Her bilet için sefer bilgisini getir
+                val sonucListesi = mutableListOf<Pair<Biletler, com.example.rezervasyonapp1.data.entity.Seferler?>>()
+                var tamamlananSayisi = 0
+
+                biletler.forEach { bilet ->
+                    db.collection("seferler").document(bilet.sefer_id).get()
+                        .addOnSuccessListener { seferDoc ->
+                            val sefer = seferDoc.toObject(com.example.rezervasyonapp1.data.entity.Seferler::class.java)
+                            sonucListesi.add(Pair(bilet, sefer))
+                            tamamlananSayisi++
+                            
+                            // Tüm biletler için sefer bilgileri alındığında callback çağır
+                            if (tamamlananSayisi == biletler.size) {
+                                callback(sonucListesi)
+                            }
+                        }
+                        .addOnFailureListener {
+                            sonucListesi.add(Pair(bilet, null))
+                            tamamlananSayisi++
+                            if (tamamlananSayisi == biletler.size) {
+                                callback(sonucListesi)
+                            }
+                        }
+                }
             }
     }
 }

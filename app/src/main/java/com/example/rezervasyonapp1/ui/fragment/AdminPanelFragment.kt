@@ -31,6 +31,12 @@ class AdminPanelFragment : Fragment() {
         binding.cardAracYonetimi.setOnClickListener {
             findNavController().navigate(R.id.action_adminPanelFragment_to_adminAracEkleFragment)
         }
+
+        // 3. Mevcut Seferleri Görüntüle (YENİ)
+        binding.cardMevcutSeferler.setOnClickListener {
+            findNavController().navigate(R.id.action_adminPanelFragment_to_mevcutSeferlerFragment)
+        }
+        
         binding.btnCikis.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             findNavController().popBackStack()

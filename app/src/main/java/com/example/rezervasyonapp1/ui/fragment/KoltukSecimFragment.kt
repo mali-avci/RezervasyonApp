@@ -14,7 +14,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.rezervasyonapp1.data.entity.Seferler
 import com.example.rezervasyonapp1.databinding.FragmentKoltukSecimBinding
 import com.example.rezervasyonapp1.ui.viewmodel.BiletViewModel
-import SeferlerViewModel
+import com.example.rezervasyonapp1.ui.viewmodel.SeferlerViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
@@ -76,6 +76,9 @@ class KoltukSecimFragment : Fragment() {
                 }
             }
         }
+        
+        // İlk yüklemede seçilen koltukları göster
+        guncelleSecilenKoltuklarGosterimi()
     }
 
     private fun generateKoltuklar(sefer: Seferler) {
@@ -85,7 +88,13 @@ class KoltukSecimFragment : Fragment() {
         val (sutunSayisi, koridorIndeksi) = if (sefer.arac_tipi == "UCAK") Pair(7, 4) else Pair(5, 3)
         binding.gridLayoutKoltuklar.columnCount = sutunSayisi
 
-        val toplamKapasite = if (sefer.arac_tipi == "UCAK") 180 else 44
+        // Kapasite bilgisini seferdeki araç detayından al
+        val toplamKapasite = when {
+            sefer.arac_tipi == "UCAK" && sefer.ucak_detay != null -> sefer.ucak_detay!!.kapasite
+            sefer.arac_tipi == "OTOBUS" && sefer.otobus_detay != null -> sefer.otobus_detay!!.kapasite
+            sefer.arac_tipi == "UCAK" -> 180 // Fallback değer
+            else -> 44 // Fallback değer
+        }
         var koltukSayaci = 1
 
         while (koltukSayaci <= toplamKapasite) {
@@ -98,32 +107,41 @@ class KoltukSecimFragment : Fragment() {
                     val button = MaterialButton(requireContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle)
 
                     button.text = koltukNo.toString()
-                    button.layoutParams = ViewGroup.LayoutParams(120, 120)
-                    button.setPadding(0, 0, 0, 0)
-                    button.textSize = 10f
+                    val size = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
+                    button.layoutParams = ViewGroup.LayoutParams(size, size)
+                    button.setPadding(8, 8, 8, 8)
+                    button.textSize = 12f
+                    button.minWidth = 0
+                    button.minHeight = 0
+                    button.cornerRadius = 8
 
                     when {
                         benimBiletlerim.contains(koltukNo) -> {
                             // MAVİ (İptal edilebilir)
-                            val renk = if (iptalEdilecekKoltuklar.contains(koltukNo)) Color.GRAY else Color.BLUE
+                            val renk = if (iptalEdilecekKoltuklar.contains(koltukNo)) Color.parseColor("#9E9E9E") else Color.parseColor("#2196F3")
                             button.backgroundTintList = ColorStateList.valueOf(renk)
                             button.setTextColor(Color.WHITE)
+                            button.strokeWidth = 0
                             button.setOnClickListener { toggleIptal(button, koltukNo) }
                         }
                         doluListe.contains(koltukNo.toString()) -> {
                             // KIRMIZI (Dolu)
-                            button.backgroundTintList = ColorStateList.valueOf(Color.RED)
+                            button.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F44336"))
                             button.setTextColor(Color.WHITE)
+                            button.strokeWidth = 0
                             button.isEnabled = false
+                            button.alpha = 0.7f
                         }
                         else -> {
                             // BOŞ VEYA SEÇİLMİŞ
-                            val renk = if (secilenKoltuklar.contains(koltukNo)) Color.parseColor("#4CAF50") else Color.TRANSPARENT
-                            val yaziRengi = if (secilenKoltuklar.contains(koltukNo)) Color.WHITE else Color.BLACK
+                            val renk = if (secilenKoltuklar.contains(koltukNo)) Color.parseColor("#4CAF50") else Color.WHITE
+                            val yaziRengi = if (secilenKoltuklar.contains(koltukNo)) Color.WHITE else Color.parseColor("#424242")
+                            val strokeRengi = if (secilenKoltuklar.contains(koltukNo)) Color.parseColor("#4CAF50") else Color.parseColor("#BDBDBD")
 
                             button.backgroundTintList = ColorStateList.valueOf(renk)
                             button.setTextColor(yaziRengi)
-                            button.strokeColor = ColorStateList.valueOf(Color.LTGRAY)
+                            button.strokeColor = ColorStateList.valueOf(strokeRengi)
+                            button.strokeWidth = if (secilenKoltuklar.contains(koltukNo)) 0 else 2
                             button.setOnClickListener { toggleSecim(button, koltukNo) }
                         }
                     }
@@ -140,6 +158,7 @@ class KoltukSecimFragment : Fragment() {
             secilenKoltuklar.add(no)
         }
         guncelSeferNesnesi?.let { generateKoltuklar(it) } // Görünümü tazele
+        guncelleSecilenKoltuklarGosterimi() // Alt taraftaki gösterimi güncelle
     }
 
     private fun toggleIptal(button: MaterialButton, no: Int) {
@@ -149,6 +168,39 @@ class KoltukSecimFragment : Fragment() {
             iptalEdilecekKoltuklar.add(no)
         }
         guncelSeferNesnesi?.let { generateKoltuklar(it) } // Görünümü tazele
+        guncelleSecilenKoltuklarGosterimi() // Alt taraftaki gösterimi güncelle
+    }
+
+    private fun guncelleSecilenKoltuklarGosterimi() {
+        val gelenSefer = args.secilenSefer
+        val secilenListe = secilenKoltuklar.sorted()
+        val iptalListe = iptalEdilecekKoltuklar.sorted()
+        
+        val toplamKoltukSayisi = secilenListe.size + iptalListe.size
+        val toplamFiyat = (secilenListe.size * gelenSefer.fiyat)
+        
+        val gosterilecekMetin = buildString {
+            if (secilenListe.isNotEmpty()) {
+                append("Yeni: ${secilenListe.joinToString(", ")}")
+            }
+            if (iptalListe.isNotEmpty()) {
+                if (secilenListe.isNotEmpty()) append(" | ")
+                append("İptal: ${iptalListe.joinToString(", ")}")
+            }
+            if (toplamKoltukSayisi == 0) {
+                append("Seçim yapılmadı")
+            }
+        }
+        
+        binding.textViewSecilenKoltuk.text = gosterilecekMetin
+        
+        // Toplam fiyat gösterimi
+        if (toplamKoltukSayisi > 0) {
+            binding.textViewToplamFiyat.text = "Toplam: ${toplamFiyat.toInt()} TL"
+            binding.textViewToplamFiyat.visibility = View.VISIBLE
+        } else {
+            binding.textViewToplamFiyat.visibility = View.GONE
+        }
     }
 
     private fun islemiTamamla(sefer: Seferler, uid: String) {

@@ -1,8 +1,10 @@
 package com.example.rezervasyonapp1.data.repo
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.rezervasyonapp1.data.entity.Seferler
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.example.rezervasyonapp1.data.entity.Otobus
 import com.example.rezervasyonapp1.data.entity.Ucak
 
@@ -10,7 +12,14 @@ class SeferlerRepository {
     private val db = FirebaseFirestore.getInstance()
     private val seferlerCollection = db.collection("seferler")
     val seferlerListesi = MutableLiveData<List<Seferler>>()
+    
+    // Snapshot listener'ları sakla, böylece tekrar eklemeyi önleriz
+    private var tumSeferlerListener: ListenerRegistration? = null
+    private var seferAraListener: ListenerRegistration? = null
 
+    init {
+        Log.d("SeferlerRepository", "Repository oluşturuldu, LiveData referansı: ${seferlerListesi.hashCode()}")
+    }
 
 
     fun tumAraclariGetir(tip: String, callback: (List<Any>) -> Unit) {
@@ -40,22 +49,44 @@ class SeferlerRepository {
     }
 
     fun tumSeferleriAl() {
+        Log.d("SeferlerRepository", "tumSeferleriAl çağrıldı")
+        // Eğer zaten bir listener varsa, önce onu kaldır
+        tumSeferlerListener?.remove()
+        seferAraListener?.remove() // Arama listener'ını da kaldır
+        
         // SnapshotListener: Veritabanında bir değişiklik (ekleme, silme, güncelleme)
         // olduğunda uygulama ekranı anında güncellenir.
-        seferlerCollection.addSnapshotListener { value, error ->
+        tumSeferlerListener = seferlerCollection.addSnapshotListener { value, error ->
+            if (error != null) {
+                Log.e("SeferlerRepository", "Firestore hatası: ${error.message}")
+                seferlerListesi.value = emptyList()
+                return@addSnapshotListener
+            }
             if (value != null) {
                 val liste = value.toObjects(Seferler::class.java)
+                Log.d("SeferlerRepository", "Firestore'dan ${liste.size} sefer alındı")
                 seferlerListesi.value = liste
+            } else {
+                Log.d("SeferlerRepository", "Firestore'dan boş değer geldi")
+                seferlerListesi.value = emptyList()
             }
         }
     }
 
-    fun seferAra(kalkis: String, varis: String) {
-        seferlerCollection
+    fun seferAra(kalkis: String, varis: String, tarih: String) {
+        // Önceki listener'ı kaldır
+        seferAraListener?.remove()
+        tumSeferlerListener?.remove()
+        
+        seferAraListener = seferlerCollection
             .whereEqualTo("kalkis_yeri", kalkis)
             .whereEqualTo("varis_yeri", varis)
+            .whereEqualTo("tarih", tarih)
             .addSnapshotListener { value, error ->
-                if (error != null) return@addSnapshotListener
+                if (error != null) {
+                    seferlerListesi.value = emptyList()
+                    return@addSnapshotListener
+                }
 
                 // Veritabanında herhangi bir koltuk değiştiği anda burası tetiklenir
                 val liste = value?.toObjects(Seferler::class.java) ?: listOf()

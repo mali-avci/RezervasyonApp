@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+    <color name="primary">#42A5F5</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="accent">#66BB6A</color>
+    <color name="background">#121212</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="error">#EF5350</color>
+    <color name="success">#66BB6A</color>
+</resources>
+

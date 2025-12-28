@@ -21,12 +21,18 @@ class KayitOlFragment : Fragment(R.layout.fragment_kayit_ol) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentKayitOlBinding.bind(view)
         auth = Firebase.auth
+        
+        // Geri dön butonu
+        binding.buttonGeriDon.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        
         binding.btnKayitOl.setOnClickListener {
             val email = binding.etKayitEmail.text.toString()
             val sifre = binding.etKayitSifre.text.toString()
             val ad = binding.etKayitAd.text.toString()
 
-            if (email.isNotEmpty() && sifre.isNotEmpty()) {
+            if (email.isNotEmpty() && sifre.isNotEmpty() && ad.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email, sifre)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -49,6 +55,8 @@ class KayitOlFragment : Fragment(R.layout.fragment_kayit_ol) {
                             Toast.makeText(requireContext(), "Hata: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                         }
                     }
+            } else {
+                Toast.makeText(requireContext(), "Lütfen tüm alanları doldurun!", Toast.LENGTH_SHORT).show()
             }
         }
     }

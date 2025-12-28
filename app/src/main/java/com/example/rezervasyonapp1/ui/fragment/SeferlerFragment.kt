@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -12,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rezervasyonapp1.databinding.FragmentSeferlerBinding
 import com.example.rezervasyonapp1.ui.adapter.SeferlerAdapter
-import SeferlerViewModel
+import com.example.rezervasyonapp1.ui.viewmodel.SeferlerViewModel
 
 class SeferlerFragment : Fragment() {
 
@@ -44,7 +43,8 @@ class SeferlerFragment : Fragment() {
 
         // 2. Firestore üzerinden filtreli aramayı başlat
         // Bu metod Repository içindeki 'whereEqualTo' sorgusunu tetikler.
-        viewModel.ara(args.kalkis, args.varis)
+        // Tarih filtresi de eklendi
+        viewModel.ara(args.kalkis, args.varis, args.tarih)
     }
 
     private fun setupRecyclerView() {
@@ -63,16 +63,20 @@ class SeferlerFragment : Fragment() {
         // ViewModel'deki Livedata Firebase SnapshotListener'dan beslenir
         viewModel.seferlerListesi.observe(viewLifecycleOwner) { liste ->
             if (liste.isNullOrEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    "${args.kalkis} - ${args.varis} arası sefer bulunamadı.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // Filtreye göre özel mesaj göster
+                binding.textViewBosMesaj.text = "${args.kalkis} - ${args.varis} arasında\n${args.tarih} tarihinde sefer bulunamadı."
+                binding.textViewBosMesaj.visibility = View.VISIBLE
                 binding.rvSeferler.visibility = View.GONE
             } else {
+                binding.textViewBosMesaj.visibility = View.GONE
                 binding.rvSeferler.visibility = View.VISIBLE
                 adapter.submitList(liste)
             }
+        }
+
+        // Geri butonu
+        binding.buttonGeri.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Bilet Arka Planı -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M20,20 L100,20 L100,100 L20,100 Z" />
+    
+    <!-- Bilet Delikleri (Sol) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,35 Q20,30 25,30 Q30,30 30,35 Q30,40 25,40 Q20,40 20,35 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,60 Q20,55 25,55 Q30,55 30,60 Q30,65 25,65 Q20,65 20,60 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,85 Q20,80 25,80 Q30,80 30,85 Q30,90 25,90 Q20,90 20,85 Z" />
+    
+    <!-- Bilet Delikleri (Sağ) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,35 Q100,30 95,30 Q90,30 90,35 Q90,40 95,40 Q100,40 100,35 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,60 Q100,55 95,55 Q90,55 90,60 Q90,65 95,65 Q100,65 100,60 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,85 Q100,80 95,80 Q90,80 90,85 Q90,90 95,90 Q100,90 100,85 Z" />
+    
+    <!-- Otobüs İkonu -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M35,45 L85,45 L85,75 L35,75 Z" />
+    
+    <!-- Otobüs Pencereleri -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M40,50 L50,50 L50,60 L40,60 Z" />
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M55,50 L65,50 L65,60 L55,60 Z" />
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M70,50 L80,50 L80,60 L70,60 Z" />
+    
+    <!-- Otobüs Tekerlekleri -->
+    <path
+        android:fillColor="#424242"
+        android:pathData="M45,75 Q45,70 50,70 Q55,70 55,75 Q55,80 50,80 Q45,80 45,75 Z" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M75,75 Q75,70 80,70 Q85,70 85,75 Q85,80 80,80 Q75,80 75,75 Z" />
+    
+    <!-- Ok İşareti (Yön) -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M90,60 L95,60 L92.5,55 Z" />
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M90,60 L95,60 L92.5,65 Z" />
+</vector>
+

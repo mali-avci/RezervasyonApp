@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.rezervasyonapp1.data.entity.Otobus
 import com.example.rezervasyonapp1.data.entity.Ucak
 import com.example.rezervasyonapp1.databinding.FragmentAdminAracEkleBinding
@@ -61,6 +62,11 @@ class AdminAracEkleFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Lütfen tüm alanları doldurun", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Geri Butonu
+        binding.btnGeri.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
